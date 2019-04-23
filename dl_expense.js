@@ -30,40 +30,53 @@
       Formats the value, "val", as U.S. currency.
       
 */
-
+//loads the pages event listeners and runs functions to set up the page
 window.addEventListener("load", function () {
       var changingCells = document.querySelectorAll("table#travelExp input.sum");
+      // Adds event listenrs to all the values of the array
       for (var i = 0; i < changingCells.length; i++) {
-            changingCells.onchange = calcExp;
+            changingCells[i].addEventListener("change", calcExp);
       }
-      document.getElementById("submitButton").click = validateSummary();
+      document.getElementById("submitButton").addEventListener("click", validateSummary);
 })
 
+// If the valudateSummary box is empty it displays a custom validation message
 function validateSummary() {
-      if (document.getElementById("summary").validity.valueMissing) {
-            document.getElementById("summary").setCustomValidity("You must include a summary of the trip in your report");
+      var summary = document.getElementById("summary")
+      if (summary.validity.valueMissing) {
+            summary.setCustomValidity("You must include a summary of the trip in your report");
       } else {
-            document.getElementById("summary").setCustomValidity("");
+            summary.setCustomValidity("");
       }
 }
 
+// Gets the values of the items within the boxes, and adds then to get totals
 function calcClass(sumClass) {
-      var sumFields = document.querySelectorAll(".sumFields");
+      var sumFields = document.getElementsByClassName(sumClass);
       var sumTotal = 0;
+      // tests for whether the box is a number and then adds it to the sumTotal
       for (var i = 0; i < sumFields.length; i++) {
             var itemValue = parseFloat(sumFields[i].value);
             if (isNaN(itemValue) !== true) {
                   sumTotal += itemValue;
             }
       }
+      // returns sumTotal
       return sumTotal;
 }
 
+// Gets the value of the boxes for travel expenses, and sets the value of other boxes to be equal to the sum of them, while formatting them to 2 decimal places
 function calcExp() {
       var expTable = document.querySelectorAll("#travelExp tbody tr");
       for (var i = 0; i < expTable.length; i++) {
-            document.getElementById("subTotal" + [i]).value = formatNumber(calcClass("date" + [i]), 2)
+            document.getElementById(`subtotal${i}`).value = formatNumber(calcClass(`date${i}`), 2)
       }
+      // Formats boxes to go to the correct number of decimals and formats the total to US currency.
+      document.getElementById("transTotal").value = formatNumber(calcClass("trans"), 2);
+      document.getElementById("lodgeTotal").value = formatNumber(calcClass("lodge"), 2);
+      document.getElementById("mealTotal").value = formatNumber(calcClass("meal"), 2);
+      document.getElementById("otherTotal").value = formatNumber(calcClass("other"), 2);
+      document.getElementById("expTotal").value = formatUSCurrency(calcClass("sum"))
 }
 // BELOW WAS PREMADE
 function formatNumber(val, decimals) {
